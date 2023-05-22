@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_mds/models/login_request.dart';
+import 'package:mobile_mds/services/APIService.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen();
@@ -55,6 +57,7 @@ class LoginScreenState extends State<LoginScreen> {
                       child: TextField(
                       
                         controller: mdpcontroller,
+                        obscureText: true,
                         style: const TextStyle(
                           color: Colors.black,
                           fontFamily: 'OpenSans',
@@ -70,8 +73,21 @@ class LoginScreenState extends State<LoginScreen> {
                       margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.1, 0, 0),
                       width: largeurEcran*0.7,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: ()async {
                           // Logique à exécuter lorsque le bouton est pressé
+                       LoginRequestModel model   = LoginRequestModel(action: "CONNECT", login: emailcontroller.text, password: mdpcontroller.text, token:"");
+                          Map<String, String> queryParams = {
+                            'action': 'CONNECT',
+                            'login': emailcontroller.text,
+                            'password': mdpcontroller.text,
+                            'token': ' ',
+                          };
+                          var response=  await APIService.login(model,queryParams);
+                          if(response.statusCode==200){
+                              showInSnackBar("gg  tu tes co ;) ✅✅✅✅");
+                          }else{
+                            showInSnackBar("un effort frerot tu sais pas rentrer le boñ mdp;❌❌❌❌❌");
+                          }
                         },
                         child: const Text('SE CONNECTER'),
                       ),
@@ -82,9 +98,10 @@ class LoginScreenState extends State<LoginScreen> {
               ],    
             ),
           );
-        
-      
-    
+  }
+  void showInSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

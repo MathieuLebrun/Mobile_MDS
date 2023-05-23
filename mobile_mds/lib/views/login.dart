@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_mds/models/login_request.dart';
 import 'package:mobile_mds/services/APIService.dart';
+import 'tache.dart'; 
+
+// Méthode pour effectuer le changement de page vers tache.dart
+void goToTachePage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => TacheScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
+  );
+}
 
 class LoginScreen extends StatefulWidget {
   LoginScreen();
@@ -8,6 +17,9 @@ class LoginScreen extends StatefulWidget {
   @override
   LoginScreenState createState() => LoginScreenState();
 }
+
+
+
 
 class LoginScreenState extends State<LoginScreen> {
   @override
@@ -85,6 +97,7 @@ class LoginScreenState extends State<LoginScreen> {
                           var response=  await APIService.login(model,queryParams);
                           if(response.statusCode==200){
                               showInSnackBar("gg  tu tes co ;) ✅✅✅✅");
+                              goToTachePage(context);
                           }else{
                             showInSnackBar("un effort frerot tu sais pas rentrer le boñ mdp;❌❌❌❌❌");
                           }

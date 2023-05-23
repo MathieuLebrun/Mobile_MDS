@@ -21,7 +21,7 @@ class APIService {
   String requestUrl = '$url?$queryString';
 
   // Effectuer la requête HTTP
-  http.Response response = await http.get(Uri.parse(requestUrl));
+  http.Response response = await http.post(Uri.parse(requestUrl));
   return response; 
 /*
     http.Response response = await client.post(

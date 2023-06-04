@@ -40,18 +40,18 @@ class DataModel {
   late final String creationDate;
   late final int semaine;
   late final String demande;
-  late final double duree;
+  late final dynamic duree;
   late final int annee;
   late final int id;
   late final String type;
-  late final String tache;
+  late final dynamic  tache;
   late final String client;
 
   DataModel.fromJson(Map<String, dynamic> json) {
     projet = json['PROJET'];
     creationDate = json['CREATIONDATE'];
     semaine = json['SEMAINE'];
-    demande = json['DEMANDE'].toString();
+    demande = json['DEMANDE'];
     duree = json['DUREE'];
     annee = json['ANNEE'];
     id = json['ID'];
@@ -70,7 +70,7 @@ class DataModel {
     data['ANNEE'] = annee;
     data['ID'] = id;
     data['TYPE'] = type;
-    data['TACHE'] = tache;
+    data['TACHE'] = tache.toString();
     data['CLIENT'] = client;
     return data;
   }

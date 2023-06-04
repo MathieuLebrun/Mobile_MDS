@@ -5,15 +5,15 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:mobile_mds/services/APIService.dart';
 import '../models/get_item.dart';
 import '../models/get_data_dev.dart';
-import '../models/tachedev_request.dart';
-import '../models/tachedev_response.dart';
+import '../models/tache_request.dart';
+import '../models/tache_response.dart';
 import '../services/PersistanceHandler.dart';
 
 
 const List<String> listType = <String>['Développement', 'Opérationnel', 'Support', 'Gestion', 'Congés', 'Recherche'];
 
 class TacheDevScreen extends StatefulWidget {
-  TacheDevScreen();
+  const TacheDevScreen({super.key});
 
   @override
   TacheScreenState createState() => TacheScreenState();
@@ -58,7 +58,7 @@ class TacheScreenState extends State<TacheDevScreen> {
   void refreshPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => TacheDevScreen()),
+      MaterialPageRoute(builder: (BuildContext context) => const TacheDevScreen()),
     );
   }
 
@@ -392,7 +392,7 @@ class TacheScreenState extends State<TacheDevScreen> {
                         if(selectedValue3 != null){
                           int idclient =  client[nomClient.indexOf('$selectedValue3')].id;
                           //String clientdata =  "$selectedValue3";
-                          TacheRequestModel model   = TacheRequestModel(action: 'TACHE', token: token, semaine: weekNumber, annee: DateTime.now().year, type: dropdownType, projet: '$selectedValue', sousProjet: '$selectedValue2', client: idclient, tache: tachecontroller.text, commentaire: commentairecontroller.text, duree: value);
+                          TacheRequestModel model   = TacheRequestModel(action: 'TACHE', token: token, semaine: weekNumber, annee: DateTime.now().year, type: dropdownType, projet: '$selectedValue', sousProjet: '$selectedValue2', demande: '', client: idclient, tache: tachecontroller.text, commentaire: commentairecontroller.text, duree: value);
                           Map<String, String> queryParams = {
                             'action': 'TACHE',
                             'token': token,
@@ -401,13 +401,12 @@ class TacheScreenState extends State<TacheDevScreen> {
                             'type': dropdownType,
                             'projet': '$selectedValue',
                             'sousProjet': '$selectedValue2',
+                            'demande' : '',
                             'client': '$idclient',
                             'tache': tachecontroller.text,
                             'commentaire': commentairecontroller.text,
                             'duree': '$value',
                           };
-                          inspect(idclient);
-                          inspect(model);
                           
                           var response =  await APIService.posttache(model,queryParams);
                           if(response.statusCode==200){
@@ -504,7 +503,7 @@ class TacheScreenState extends State<TacheDevScreen> {
         height: 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: Color.fromARGB(255, 228, 228, 228),
+          color: const Color.fromARGB(255, 228, 228, 228),
         ),
       );
   }
@@ -615,6 +614,7 @@ class TacheScreenState extends State<TacheDevScreen> {
   String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
+  @override
   void dispose() {
     textEditingController.dispose();
     super.dispose();

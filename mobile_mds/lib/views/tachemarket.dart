@@ -3,17 +3,22 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:mobile_mds/services/APIService.dart';
-import '../models/get_item_market.dart';
+import '../models/get_item.dart';
 import '../models/get_data_market.dart';
-import '../models/tachedev_request.dart';
-import '../models/tachedev_response.dart';
+import '../models/tache_request.dart';
+import '../models/tache_response.dart';
 import '../services/PersistanceHandler.dart';
 
 
-const List<String> listType = <String>['Développement', 'Opérationnel', 'Support', 'Gestion', 'Congés', 'Recherche'];
+const List<String> listType = <String>['Sales', 'Payant', 'CSM'];
+
+const List<String> Sales = <String>['Sales'];
+const List<String> Payant = <String>['Full service', 'Set-up', 'Projet'];
+const List<String> CSM = <String>['Suivi annuel', 'Suivi évolution', 'Support utilisateur', 'Support technique'];
+
 
 class TacheMarketScreen extends StatefulWidget {
-  TacheMarketScreen();
+  const TacheMarketScreen({super.key});
 
   @override
   TacheScreenState createState() => TacheScreenState();
@@ -45,6 +50,10 @@ class TacheScreenState extends State<TacheMarketScreen> {
   DateTime now = DateTime.now();
 
   String dropdownType = listType.first;
+  String dropdownSales = Sales.first;
+  String dropdownPayant = Payant.first;
+  String dropdownCSM = CSM.first;
+  String dropdownDemandeSelected = Sales.first;
 
   // Liste des options du select
   List<String> projet = List<String>.empty(growable: true);
@@ -58,14 +67,15 @@ class TacheScreenState extends State<TacheMarketScreen> {
   void refreshPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => TacheMarketScreen()),
+      MaterialPageRoute(builder: (BuildContext context) => const TacheMarketScreen()),
     );
   }
-
+ 
   void increment() {
     setState(() {
       value += 0.5;
     });
+    
   }
 
   void decrement() {
@@ -88,9 +98,7 @@ class TacheScreenState extends State<TacheMarketScreen> {
     if(response2.statusCode==200){
       var dataResponse = getItemJson(response2.body);
       if(dataResponse.status == 'success'){
-        inspect(dataResponse);
         projet = dataResponse.projet;
-        sousProjet = dataResponse.demande;
         client = dataResponse.client;
 
         for( int i=0; i<dataResponse.client.length; i++){
@@ -105,9 +113,9 @@ class TacheScreenState extends State<TacheMarketScreen> {
       'action': 'TACHE',
       'token': token,
       'datatable[query][date]': '',
-      'datatable[query][type]': 'false',      
-      'datatable[query][projet]': 'false',
-      'datatable[query][sousprojet]': 'false',
+      'datatable[query][client]': 'false',      
+      'datatable[query][type]': 'false',
+      'datatable[query][demande]': 'false',
     }; 
 
     var response=  await APIService.getdata(queryParams);
@@ -153,6 +161,16 @@ class TacheScreenState extends State<TacheMarketScreen> {
                     ),
                   )
                 ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.005, 0, 0),
+                  child: const Text(
+                    "Marketing / Commercial",
+                    style: TextStyle(
+                      fontSize: 14, 
+                      color: Color.fromARGB(255, 71, 123, 255)
+                    ),
+                  )
+                ),
               ],
             ),
             
@@ -172,6 +190,24 @@ class TacheScreenState extends State<TacheMarketScreen> {
               ],
             ),
             dropdown(listType, dropdownType),
+
+            splitebar(),
+
+            Column(
+              crossAxisAlignment:CrossAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.1, 0, 0),
+                    child: const Text(
+                      "* Demande",
+                      style: TextStyle(
+                        fontSize: 18, 
+                      ),
+                    )
+                ),
+              ],
+            ),
+            dropdown2(dropdownType),
 
             splitebar(),
 
@@ -198,29 +234,6 @@ class TacheScreenState extends State<TacheMarketScreen> {
             ),
             selectSearch(),
 
-            splitebar(),
-
-            Column(
-              crossAxisAlignment:CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Sous projet",
-                  style: TextStyle(
-                    fontSize: 18, 
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.001, 0, 0),
-                    child: const Text(
-                      "(ex : Contacts, Analytics, Builder ...)",
-                      style: TextStyle(
-                        fontSize: 12, 
-                      ),
-                    )
-                ),
-              ],
-            ),
-            selectSearch2(),
             splitebar(),
 
             Column(
@@ -379,11 +392,9 @@ class TacheScreenState extends State<TacheMarketScreen> {
                 onPressed: ()async {
                   if (_formKey.currentState!.validate()) {
                     if(selectedValue != null ){
-                      if(selectedValue2 != null){
                         if(selectedValue3 != null){
                           int idclient =  client[nomClient.indexOf('$selectedValue3')].id;
-                          //String clientdata =  "$selectedValue3";
-                          TacheRequestModel model   = TacheRequestModel(action: 'TACHE', token: token, semaine: weekNumber, annee: DateTime.now().year, type: dropdownType, projet: '$selectedValue', sousProjet: '$selectedValue2', client: idclient, tache: tachecontroller.text, commentaire: commentairecontroller.text, duree: value);
+                          TacheRequestModel model   = TacheRequestModel(action: 'TACHE', token: token, semaine: weekNumber, annee: DateTime.now().year, type: dropdownType, projet: '$selectedValue', sousProjet: "", demande : dropdownDemandeSelected, client: idclient, tache: tachecontroller.text, commentaire: commentairecontroller.text, duree: value);
                           Map<String, String> queryParams = {
                             'action': 'TACHE',
                             'token': token,
@@ -391,14 +402,13 @@ class TacheScreenState extends State<TacheMarketScreen> {
                             'annee': '${DateTime.now().year}',
                             'type': dropdownType,
                             'projet': '$selectedValue',
-                            'sousProjet': '$selectedValue2',
+                            'sousProjet' : "",
+                            'demande': dropdownDemandeSelected,
                             'client': '$idclient',
                             'tache': tachecontroller.text,
                             'commentaire': commentairecontroller.text,
                             'duree': '$value',
                           };
-                          inspect(idclient);
-                          inspect(model);
                           
                           var response =  await APIService.posttache(model,queryParams);
                           if(response.statusCode==200){
@@ -415,42 +425,13 @@ class TacheScreenState extends State<TacheMarketScreen> {
                         }else{
                           showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
                         }
-                      }else{
-                        showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
-                      }
+
                     }else{
                       showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
                     }
                   }else{
                     showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
                   }
-                  // Logique à exécuter lorsque le bouton est pressé
-                  /*LoginRequestModel model   = LoginRequestModel(action: "CONNECT", login: emailcontroller.text, password: mdpcontroller.text, token:"");
-                  Map<String, String> queryParams = {
-                    'action': 'CONNECT',
-                    'login': emailcontroller.text,
-                    'password': mdpcontroller.text,
-                    'token': ' ',
-                  };
-                  var response=  await APIService.login(model,queryParams);
-                  if(response.statusCode==200){
-                      var LoginResponse = loginResponseJson(response.body);
-                      if(LoginResponse.status == 'success'){
-                        PersistanceHandler().setTokenEDP(LoginResponse.session.token);
-                        showInSnackBar("gg  tu tes co ;) ✅✅✅✅");
-                          // ignore: use_build_context_synchronously
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TacheMarketScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
-                        );
-                        
-
-                      }else {
-                        showInSnackBar("❌${LoginResponse.tokenStatus}");
-                      }
-                  }else{
-                    showInSnackBar("un effort frerot tu sais pas rentrer le boñ mdp;❌❌❌❌❌");
-                  }*/
                 },
                 child: const Text('VALIDÉ LA TÂCHE'),
               ),
@@ -495,7 +476,7 @@ class TacheScreenState extends State<TacheMarketScreen> {
         height: 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: Color.fromARGB(255, 228, 228, 228),
+          color: const Color.fromARGB(255, 228, 228, 228),
         ),
       );
   }
@@ -521,7 +502,7 @@ class TacheScreenState extends State<TacheMarketScreen> {
             DataCell(Text('${datatableau[i].semaine}')),
             DataCell(Text('${datatableau[i].type}')),
             DataCell(Text('${datatableau[i].projet}')),
-            DataCell(Text('${datatableau[i].sousProjet}')),
+            DataCell(Text('${datatableau[i].demande}')),
             DataCell(Text('${datatableau[i].client}')),
             DataCell(Text('${datatableau[i].tache}')),
             DataCell(Text('${datatableau[i].duree}')),
@@ -549,7 +530,7 @@ class TacheScreenState extends State<TacheMarketScreen> {
         label: Text('Projet'),
       ),
       DataColumn(
-        label: Text('Sous projet'),
+        label: Text('DEMANDE'),
       ),
       DataColumn(
         label: Text('Client'),
@@ -601,11 +582,76 @@ class TacheScreenState extends State<TacheMarketScreen> {
     );
   }
 
+  Widget dropdown2(String element) {
+    List<String> list = Sales;
+    String selected = dropdownSales;
+    if(element == "Sales"){
+      list = Sales;
+      selected = dropdownSales;
+
+      dropdownPayant = Payant.first;
+      dropdownCSM = CSM.first;
+    } else if(element == "Payant"){
+      list = Payant;
+      selected = dropdownPayant;
+
+      dropdownSales = Sales.first;
+      dropdownCSM = CSM.first;
+    } else if(element == "CSM"){
+      list = CSM;
+      selected = dropdownCSM;
+
+      dropdownSales = Sales.first;
+      dropdownPayant = Payant.first;
+    }
+    dropdownDemandeSelected = selected;
+    var hauteurEcran = MediaQuery.of(context).size.height;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.01, 0, 0),
+            //width: largeurEcran*0.9,
+            child: DropdownButton2<String>(
+              value: selected,
+              hint: const Icon(Icons.arrow_downward),
+              //elevation: 18,
+              style: const TextStyle(color: Colors.black),
+              underline: Container(
+                height: 2,
+                color: Colors.black,
+              ),
+              onChanged: (String? value) {
+                // This is called when the user selects an item.
+                setState(() {
+                  if(element == "Sales"){
+                    dropdownSales =  value!;
+                  } else if(element == "Payant"){
+                    dropdownPayant = value!;
+                  } else if(element == "CSM"){
+                    dropdownCSM = value!;
+                  }
+                  dropdownDemandeSelected = value!;
+                }); 
+              },
+              items: list.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+        ),
+      ],
+    );
+  }
+
   
 
   String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
+  @override
   void dispose() {
     textEditingController.dispose();
     super.dispose();
@@ -701,102 +747,6 @@ class TacheScreenState extends State<TacheMarketScreen> {
   }
 
   
-  String? selectedValue2;
-  final TextEditingController textEditingController2 = TextEditingController();
-
-  void dispose2() {
-    textEditingController2.dispose();
-    super.dispose();
-  }
-
-  Widget selectSearch2() {
-    var hauteurEcran = MediaQuery.of(context).size.height;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-            margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.01, 0, 0),
-            child:  DropdownButton2<String>(
-            isExpanded: true,
-            hint: Text(
-              'Select Item',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).hintColor,
-              ),
-            ),
-            items: sousProjet
-                .map((item) => DropdownMenuItem(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                    ))
-                .toList(),
-            value: selectedValue2,
-            onChanged: (value) {
-              setState(() {
-                
-                selectedValue2 = value as String;
-              });
-            },
-            buttonStyleData: const ButtonStyleData(
-              height: 40,
-              width: 200,
-            ),
-            dropdownStyleData: const DropdownStyleData(
-              maxHeight: 200,
-            ),
-            menuItemStyleData: const MenuItemStyleData(
-              height: 40,
-            ),
-            dropdownSearchData: DropdownSearchData(
-              searchController: textEditingController2,
-              searchInnerWidgetHeight: 50,
-              searchInnerWidget: Container(
-                height: 50,
-                padding: const EdgeInsets.only(
-                  top: 8,
-                  bottom: 4,
-                  right: 8,
-                  left: 8,
-                ),
-                child: TextFormField(
-                  expands: true,
-                  maxLines: null,
-                  controller: textEditingController2,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                    hintText: 'Search for an item...',
-                    hintStyle: const TextStyle(fontSize: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ),
-              searchMatchFn: (item, searchValue) {
-                return (item.value.toString().contains(searchValue));
-              },
-            ),
-            //This to clear the search value when you close the menu
-            onMenuStateChange: (isOpen) {
-              if (!isOpen) {
-                textEditingController2.clear();
-              }
-            },
-          ),
-        ),
-      ],
-    );
-  }
 
   String? selectedValue3;
   

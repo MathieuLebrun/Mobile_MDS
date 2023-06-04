@@ -3,8 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:mobile_mds/models/login_request.dart';
 import 'package:mobile_mds/services/APIService.dart';
+import 'package:mobile_mds/views/tachemarket.dart';
 import '../models/login_response.dart';
-import '../models/team_response.dart';
+import '../models/get_team.dart';
 import '../services/PersistanceHandler.dart';
 import 'tachedev.dart'; 
 
@@ -93,21 +94,21 @@ class LoginScreenState extends State<LoginScreen> {
                           };
                           var response=  await APIService.postdata(model,queryParams);
                           if(response.statusCode==200){
-                              var LoginResponse = loginResponseJson(response.body);
-                              if(LoginResponse.status == 'success'){
-                                PersistanceHandler().setTokenEDP(LoginResponse.session.token);
+                              var loginResponse = loginResponseJson(response.body);
+                              if(loginResponse.status == 'success'){
+                                PersistanceHandler().setTokenEDP(loginResponse.session.token);
                                     Map<String, String> queryParams = {
                                       'action': 'USER',
-                                      'token': LoginResponse.session.token,
+                                      'token': loginResponse.session.token,
                                       'type': "login",
                                     };
                                     var response=  await APIService.getdata(queryParams);
                                     if(response.statusCode==200){
-                                        var TeamResponse = teamResponseJson(response.body);
-                                        if(TeamResponse.status == 'success'){
-                                          inspect(TeamResponse.data[0].team);
+                                        var teamResponse = teamResponseJson(response.body);
+                                        if(teamResponse.status == 'success'){
                                           
-                                          if (TeamResponse.data[0].team == 'Dev / Support'){
+                                          
+                                          if (teamResponse.data[0].team == 'Dev / Support'){
                                             showInSnackBar("✅ Connexion réussie !");
                                               // ignore: use_build_context_synchronously
                                             Navigator.push(
@@ -115,25 +116,25 @@ class LoginScreenState extends State<LoginScreen> {
                                               MaterialPageRoute(builder: (context) => TacheDevScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
                                             );
                                           }
-                                          if (TeamResponse.data[0].team == 'Marketing / Commercial'){
+                                          if (teamResponse.data[0].team == 'Marketing / Commercial'){
                                             showInSnackBar("✅ Connexion réussie !");
                                               // ignore: use_build_context_synchronously
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => TacheDevScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
+                                              MaterialPageRoute(builder: (context) => TacheMarketScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
                                             );
                                           }
                                           
 
                                         }else {
-                                          showInSnackBar("❌${LoginResponse.tokenStatus}");
+                                          showInSnackBar("❌${loginResponse.tokenStatus}");
                                         }
                                     }else{
                                       showInSnackBar("❌ Une erreur de connexion s'est produite lors de la tentative de connexion. Veuillez vérifier l'état de votre réseau internet.");
                                     }
 
                               }else {
-                                showInSnackBar("❌${LoginResponse.tokenStatus}");
+                                showInSnackBar("❌${loginResponse.tokenStatus}");
                               }
                           }else{
                             showInSnackBar("❌ Une erreur de connexion s'est produite lors de la tentative de connexion. Veuillez vérifier l'état de votre réseau internet.");

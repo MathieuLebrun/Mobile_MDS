@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:http/http.dart' as http;
 import 'package:mobile_mds/models/tache_request.dart';
 
@@ -62,6 +64,7 @@ class APIService {
 
     // Effectuer la requête HTTP
     http.Response response = await http.post(Uri.parse(requestUrl));
+    inspect(response);
     return response; 
 
   } 

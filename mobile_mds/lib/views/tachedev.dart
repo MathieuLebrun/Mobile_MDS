@@ -8,6 +8,7 @@ import '../models/get_data_dev.dart';
 import '../models/tache_request.dart';
 import '../models/tache_response.dart';
 import '../services/PersistanceHandler.dart';
+import 'login.dart';
 
 
 const List<String> listType = <String>['Développement', 'Opérationnel', 'Support', 'Gestion', 'Congés', 'Recherche'];
@@ -409,7 +410,7 @@ class TacheScreenState extends State<TacheDevScreen> {
                           };
                           
                           var response =  await APIService.posttache(model,queryParams);
-                          if(response.statusCode==200){
+                          if(response.statusCode==201){
                             var tacheResponse = tacheResponseJson(response.body);
                             if(tacheResponse.status == 'success'){
                               showInSnackBar("✅ La tâche a bien été enregistré");
@@ -417,8 +418,13 @@ class TacheScreenState extends State<TacheDevScreen> {
                             }else {
                               showInSnackBar("❌ ${tacheResponse.message}");
                             }
-                          }else{
-                            showInSnackBar("un effort frerot tu sais pas rentrer le bon mdp;❌❌❌❌❌");
+                          }else if(response.statusCode==401){
+                            showInSnackBar("❌ Token a expiré, déconnexion.");
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            );
                           }
                         }else{
                           showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
@@ -432,33 +438,6 @@ class TacheScreenState extends State<TacheDevScreen> {
                   }else{
                     showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");
                   }
-                  // Logique à exécuter lorsque le bouton est pressé
-                  /*LoginRequestModel model   = LoginRequestModel(action: "CONNECT", login: emailcontroller.text, password: mdpcontroller.text, token:"");
-                  Map<String, String> queryParams = {
-                    'action': 'CONNECT',
-                    'login': emailcontroller.text,
-                    'password': mdpcontroller.text,
-                    'token': ' ',
-                  };
-                  var response=  await APIService.login(model,queryParams);
-                  if(response.statusCode==200){
-                      var LoginResponse = loginResponseJson(response.body);
-                      if(LoginResponse.status == 'success'){
-                        PersistanceHandler().setTokenEDP(LoginResponse.session.token);
-                        showInSnackBar("gg  tu tes co ;) ✅✅✅✅");
-                          // ignore: use_build_context_synchronously
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TacheDevScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
-                        );
-                        
-
-                      }else {
-                        showInSnackBar("❌${LoginResponse.tokenStatus}");
-                      }
-                  }else{
-                    showInSnackBar("un effort frerot tu sais pas rentrer le boñ mdp;❌❌❌❌❌");
-                  }*/
                 },
                 child: const Text('VALIDÉ LA TÂCHE'),
               ),

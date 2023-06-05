@@ -12,7 +12,7 @@ import 'tachedev.dart';
 
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen();
+  const LoginScreen({super.key});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -86,56 +86,56 @@ class LoginScreenState extends State<LoginScreen> {
                         onPressed: ()async {
                           // Logique à exécuter lorsque le bouton est pressé
                         LoginRequestModel model   = LoginRequestModel(action: "CONNECT", login: emailcontroller.text, password: mdpcontroller.text, token:"");
-                          Map<String, String> queryParams = {
-                            'action': 'CONNECT',
-                            'login': emailcontroller.text,
-                            'password': mdpcontroller.text,
-                            'token': ' ',
-                          };
-                          var response=  await APIService.postdata(model,queryParams);
-                          if(response.statusCode==200){
-                              var loginResponse = loginResponseJson(response.body);
-                              if(loginResponse.status == 'success'){
-                                PersistanceHandler().setTokenEDP(loginResponse.session.token);
-                                    Map<String, String> queryParams = {
-                                      'action': 'USER',
-                                      'token': loginResponse.session.token,
-                                      'type': "login",
-                                    };
-                                    var response=  await APIService.getdata(queryParams);
-                                    if(response.statusCode==200){
-                                        var teamResponse = teamResponseJson(response.body);
-                                        if(teamResponse.status == 'success'){
-                                          
-                                          
-                                          if (teamResponse.data[0].team == 'Dev / Support'){
-                                            showInSnackBar("✅ Connexion réussie !");
-                                              // ignore: use_build_context_synchronously
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => TacheDevScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
-                                            );
-                                          }
-                                          if (teamResponse.data[0].team == 'Marketing / Commercial'){
-                                            showInSnackBar("✅ Connexion réussie !");
-                                              // ignore: use_build_context_synchronously
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => TacheMarketScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
-                                            );
-                                          }
-                                          
+                        Map<String, String> queryParams = {
+                          'action': 'CONNECT',
+                          'login': emailcontroller.text,
+                          'password': mdpcontroller.text,
+                          'token': ' ',
+                        };
+                        var response=  await APIService.postdata(model,queryParams);
+                        if(response.statusCode==200){
+                            var loginResponse = loginResponseJson(response.body);
+                            if(loginResponse.status == 'success'){
+                              PersistanceHandler().setTokenEDP(loginResponse.session.token);
+                              Map<String, String> queryParams = {
+                                'action': 'USER',
+                                'token': loginResponse.session.token,
+                                'type': "login",
+                              };
+                              var response2=  await APIService.getdata(queryParams);
+                              if(response2.statusCode==200){
+                                var teamResponse = teamResponseJson(response2.body);
+                                if(teamResponse.status == 'success'){
+                                  if (teamResponse.data[0].team == 'Dev / Support'){
+                                    showInSnackBar("✅ Connexion réussie !");
+                                      // ignore: use_build_context_synchronously
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const TacheDevScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
+                                    );
+                                  }
+                                  if (teamResponse.data[0].team == 'Marketing / Commercial'){
+                                    showInSnackBar("✅ Connexion réussie !");
+                                      // ignore: use_build_context_synchronously
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const TacheMarketScreen()), // Remplacez TachePage() par le nom de votre classe de page tache.dart
+                                    );
+                                  }
+                                  
 
-                                        }else {
-                                          showInSnackBar("❌${loginResponse.tokenStatus}");
-                                        }
-                                    }else{
-                                      showInSnackBar("❌ Une erreur de connexion s'est produite lors de la tentative de connexion. Veuillez vérifier l'état de votre réseau internet.");
-                                    }
-
-                              }else {
-                                showInSnackBar("❌${loginResponse.tokenStatus}");
+                                }else {
+                                  showInSnackBar("❌${loginResponse.tokenStatus}");
+                                }
+                              }else{
+                                showInSnackBar("❌ Une erreur de connexion s'est produite lors de la tentative de connexion. Veuillez vérifier l'état de votre réseau internet.");
                               }
+                            }else if(response.statusCode==401){
+                              showInSnackBar("❌ ${loginResponse.tokenStatus}.");
+                            }
+                          }else if(response.statusCode==401){
+                              var loginResponse = loginResponseJson(response.body);
+                              showInSnackBar("❌ ${loginResponse.tokenStatus}.");
                           }else{
                             showInSnackBar("❌ Une erreur de connexion s'est produite lors de la tentative de connexion. Veuillez vérifier l'état de votre réseau internet.");
                           }

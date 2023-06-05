@@ -8,6 +8,7 @@ import '../models/get_data_market.dart';
 import '../models/tache_request.dart';
 import '../models/tache_response.dart';
 import '../services/PersistanceHandler.dart';
+import 'login.dart';
 
 
 const List<String> listType = <String>['Sales', 'Payant', 'CSM'];
@@ -411,7 +412,7 @@ class TacheScreenState extends State<TacheMarketScreen> {
                           };
                           
                           var response =  await APIService.posttache(model,queryParams);
-                          if(response.statusCode==200){
+                          if(response.statusCode==201){
                             var tacheResponse = tacheResponseJson(response.body);
                             if(tacheResponse.status == 'success'){
                               showInSnackBar("✅ La tâche a bien été enregistré");
@@ -419,8 +420,13 @@ class TacheScreenState extends State<TacheMarketScreen> {
                             }else {
                               showInSnackBar("❌ ${tacheResponse.message}");
                             }
-                          }else{
-                            showInSnackBar("un effort frerot tu sais pas rentrer le bon mdp;❌❌❌❌❌");
+                          }else if(response.statusCode==401){
+                            showInSnackBar("❌ Token a expiré, déconnexion.");
+                            // ignore: use_build_context_synchronously
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            );
                           }
                         }else{
                           showInSnackBar("❌ La soumission du formulaire a échoué. Veuillez remplir tous les champs obligatoires (*) avant de procéder.");

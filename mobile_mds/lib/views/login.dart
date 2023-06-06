@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_mds/models/login_request.dart';
@@ -22,9 +21,10 @@ class LoginScreen extends StatefulWidget {
 
 
 class LoginScreenState extends State<LoginScreen> {
-  @override
+
   final emailcontroller = TextEditingController();
   final mdpcontroller = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     var largeurEcran = MediaQuery.of(context).size.width;
     var hauteurEcran = MediaQuery.of(context).size.height;
@@ -37,7 +37,11 @@ class LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.2, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.16, 0, 0),
+                      child: _buildLogo()
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.14, 0, 0),
                       child: const Text(
                         "Connectez-vous",
                         style: TextStyle(
@@ -46,7 +50,7 @@ class LoginScreenState extends State<LoginScreen> {
                       )
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.1, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.07, 0, 0),
                       width: largeurEcran*0.7,
                       child: TextField(
                         controller: emailcontroller,
@@ -63,7 +67,7 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.07, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.05, 0, 0),
                       width: largeurEcran*0.7,
                       child: TextField(
                         controller: mdpcontroller,
@@ -80,7 +84,7 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.1, 0, 0),
+                      margin: EdgeInsets.fromLTRB(0, hauteurEcran*0.08, 0, 0),
                       width: largeurEcran*0.7,
                       child: ElevatedButton(
                         onPressed: ()async {
@@ -149,7 +153,19 @@ class LoginScreenState extends State<LoginScreen> {
               ],    
             ),
           );
+    
   }
+
+  Widget _buildLogo() {
+    /// Construit le logo
+    return Center(
+        child: Image.asset(
+      'images/long_logo.png', // Chemin relatif vers l'image
+      width: 300, // Largeur souhaitée de l'image
+      //height: 175, // Hauteur souhaitée de l'image
+    ));
+  }
+
   void showInSnackBar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));

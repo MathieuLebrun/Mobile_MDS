@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:http/http.dart' as http;
 import 'package:mobile_mds/models/tache_request.dart';
 
@@ -23,7 +21,7 @@ class APIService {
     String requestUrl = '$url?$queryString';
 
     // Effectuer la requête HTTP
-    http.Response response = await http.post(Uri.parse(requestUrl));
+    http.Response response = await http.post(Uri.parse(requestUrl), headers: requestHeaders);
     return response; 
 
   } 
@@ -43,7 +41,7 @@ class APIService {
     String requestUrl = '$url?$queryString';
 
     // Effectuer la requête HTTP
-    http.Response response = await http.get(Uri.parse(requestUrl));
+    http.Response response = await http.get(Uri.parse(requestUrl), headers: requestHeaders);
     return response; 
 
   }
@@ -63,8 +61,7 @@ class APIService {
     String requestUrl = '$url?$queryString';
 
     // Effectuer la requête HTTP
-    http.Response response = await http.post(Uri.parse(requestUrl));
-    inspect(response);
+    http.Response response = await http.post(Uri.parse(requestUrl), headers: requestHeaders);
     return response; 
 
   } 

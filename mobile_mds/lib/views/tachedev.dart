@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:mobile_mds/services/APIService.dart';
@@ -112,9 +110,9 @@ class TacheScreenState extends State<TacheDevScreen> {
 
     var response=  await APIService.getdata(queryParams);
     if(response.statusCode==200){
-      var DataResponse = getdataDevJson(response.body);
-      if(DataResponse.status == 'success'){
-        datatableau = DataResponse.data;
+      var dataResponse = getdataDevJson(response.body);
+      if(dataResponse.status == 'success'){
+        datatableau = dataResponse.data;
         setState(() {
           dataready=true;
         });
@@ -414,7 +412,9 @@ class TacheScreenState extends State<TacheDevScreen> {
                             var tacheResponse = tacheResponseJson(response.body);
                             if(tacheResponse.status == 'success'){
                               showInSnackBar("✅ La tâche a bien été enregistré");
-                              refreshPage(context);
+                              if (context.mounted) {
+                                refreshPage(context);
+                              }
                             }else {
                               showInSnackBar("❌ ${tacheResponse.message}");
                             }

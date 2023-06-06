@@ -43,7 +43,7 @@ class TacheRequestModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['action'] =action;
     data['token'] = token;
     data['semaine'] = semaine;

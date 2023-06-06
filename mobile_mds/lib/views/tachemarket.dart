@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:mobile_mds/services/APIService.dart';
@@ -416,7 +414,9 @@ class TacheScreenState extends State<TacheMarketScreen> {
                             var tacheResponse = tacheResponseJson(response.body);
                             if(tacheResponse.status == 'success'){
                               showInSnackBar("✅ La tâche a bien été enregistré");
-                              refreshPage(context);
+                              if (context.mounted) {
+                                refreshPage(context);
+                              }
                             }else {
                               showInSnackBar("❌ ${tacheResponse.message}");
                             }

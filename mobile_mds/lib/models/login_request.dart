@@ -19,7 +19,7 @@ class LoginRequestModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['action'] = action;
     data['login'] = login;
     data['password'] = password;
